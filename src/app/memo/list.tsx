@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, FlatList } from 'react-native'
 import { router, useNavigation } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore'
@@ -15,7 +15,7 @@ const handlePress = (): void => {
 }
 
 const List = (): JSX.Element => {
-  const [memos, setMemos]= useState<Memo[]>([])
+  const [memos, setMemos] = useState<Memo[]>([])
   const navigation = useNavigation()
   useEffect(() => {
     navigation.setOptions({
@@ -29,7 +29,6 @@ const List = (): JSX.Element => {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const remoteMemos: Memo[] = []
       snapshot.forEach((doc) => {
-        console.log('memo', doc.data())
         const { bodyText, updatedAt } = doc.data()
         remoteMemos.push({
           id: doc.id,
@@ -44,9 +43,10 @@ const List = (): JSX.Element => {
 
   return  (
     <View style={styles.container}>
-      <View>
-        {memos.map((memo) => <MemoListItem memo={memo} />)}
-      </View>
+      <FlatList
+        data = {memos}
+        renderItem={({ item }) => <MemoListItem memo={item} />}
+      />
       <CircleButton onPress={handlePress}>
         <Icon name='plus' size={40} color='#ffffff'/>
       </CircleButton>
