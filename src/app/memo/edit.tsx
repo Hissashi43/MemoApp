@@ -1,9 +1,10 @@
 import {
-  View, TextInput, StyleSheet, KeyboardAvoidingView, Alert
+  View, TextInput, StyleSheet, Alert
 } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useState, useEffect } from 'react'
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore'
+import KeyboardAvoidingView from '../../components/KeyboraAvoidingView'
 import CircleButton from '../../components/CircleButton'
 import Icon from '../../components/Icon'
 import { auth, db } from '../../config'
@@ -15,19 +16,18 @@ const handlePress = (id: string, bodyText: string): void => {
     bodyText,
     updatedAt: Timestamp.fromDate(new Date())
   })
-  .then(() => {
-    router.back()
-  })
-  .catch((error) => {
-    console.log(error)
-    Alert.alert('更新に失敗しました')
-  })
-  router.back()
+    .then(() => {
+      router.back()
+    })
+    .catch((error) => {
+      console.log(error)
+      Alert.alert('更新に失敗しました')
+    })
 }
 
 const Edit = (): JSX.Element => {
   const id = String(useLocalSearchParams().id)
-  const [ bodyText, setBodyText ] = useState('')
+  const [bodyText, setBodyText] = useState('')
   useEffect(() => {
     if (auth.currentUser === null) { return }
     const ref = doc(db, `users/${auth.currentUser.uid}/memos`, id)
@@ -41,13 +41,14 @@ const Edit = (): JSX.Element => {
       })
   }, [])
   return (
-    <KeyboardAvoidingView behavior='height' style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <View style={styles.inputContainer}>
         <TextInput
           multiline
           style={styles.input}
           value={bodyText}
           onChangeText={(text) => { setBodyText(text) }}
+          autoFocus
         />
       </View>
       <CircleButton onPress={() => { handlePress(id, bodyText) }}>
